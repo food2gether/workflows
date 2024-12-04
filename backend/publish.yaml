@@ -1,0 +1,64 @@
+name: Publish Quarkus Image
+
+on:
+  workflow_call:
+    inputs:
+      java_version:
+        description: 'Java version'
+        required: true
+        default: '17'
+        type: string
+      github_token:
+        description: 'GitHub Token with permissions to push to ghcr.io'
+        required: true
+        type: string
+        default: ${{ secrets.GITHUB_TOKEN }}
+      image:
+        description: 'Image name'
+        required: true
+        type: string
+
+jobs:
+  publish-native:
+    env:
+      MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ inputs.java_version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '${{ inputs.java_version }}'
+          cache: 'maven'
+      - name: Publish Quarkus Image
+        run: ./mvnw clean package -DskipTests -Dquarkus.native.container-build=true '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
+        env:
+          QUARKUS_CONTAINER_IMAGE_PUSH: true
+          QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
+          QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ inputs.github_token }}
+          QUARKUS_CONTAINER_IMAGE_REGISTRY: ghcr.io
+          QUARKUS_CONTAINER_IMAGE_NAME: ${{ github.repository }}
+          QUARKUS_CONTAINER_IMAGE_TAG: ${{ github.ref_name }}
+          QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: latest
+  publish-jvm:
+    env:
+      MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ inputs.java_version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '${{ inputs.java_version }}'
+          cache: 'maven'
+      - name: Publish Quarkus Image
+        run: ./mvnw clean package -DskipTests '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
+        env:
+          QUARKUS_CONTAINER_IMAGE_PUSH: true
+          QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
+          QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ inputs.github_token }}
+          QUARKUS_CONTAINER_IMAGE_REGISTRY: ghcr.io
+          QUARKUS_CONTAINER_IMAGE_NAME: ${{ github.repository }}
+          QUARKUS_CONTAINER_IMAGE_TAG: ${{ github.ref_name }}-jvm
