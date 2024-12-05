@@ -13,15 +13,16 @@ on:
         required: true
         type: string
         default: ${{ secrets.GITHUB_TOKEN }}
-      image:
-        description: 'Image name'
+      version:
+        description: 'Application version'
         required: true
         type: string
 
+env:
+  MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version -DskipTests'
+
 jobs:
   publish-native:
-    env:
-      MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,18 +33,16 @@ jobs:
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
       - name: Publish Quarkus Image
-        run: ./mvnw clean package -DskipTests -Dquarkus.native.container-build=true '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
+        run: ./mvnw versions:set clean package -DnewVersion='${{ inputs.version }}' -Dquarkus.native.container-build=true '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
         env:
           QUARKUS_CONTAINER_IMAGE_PUSH: true
           QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
           QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ inputs.github_token }}
           QUARKUS_CONTAINER_IMAGE_REGISTRY: ghcr.io
           QUARKUS_CONTAINER_IMAGE_NAME: ${{ github.repository }}
-          QUARKUS_CONTAINER_IMAGE_TAG: ${{ github.ref_name }}
+          QUARKUS_CONTAINER_IMAGE_TAG: ${{ inputs.version }}
           QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: latest
   publish-jvm:
-    env:
-      MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,11 +53,11 @@ jobs:
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
       - name: Publish Quarkus Image
-        run: ./mvnw clean package -DskipTests '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
+        run: ./mvnw versions:set clean package -DnewVersion='${{ inputs.version }}' -Dproject.version='${{ inputs.version }}' '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
         env:
           QUARKUS_CONTAINER_IMAGE_PUSH: true
           QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
           QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ inputs.github_token }}
           QUARKUS_CONTAINER_IMAGE_REGISTRY: ghcr.io
           QUARKUS_CONTAINER_IMAGE_NAME: ${{ github.repository }}
-          QUARKUS_CONTAINER_IMAGE_TAG: ${{ github.ref_name }}-jvm
+          QUARKUS_CONTAINER_IMAGE_TAG: ${{ inputs.version }}-jvm

@@ -8,11 +8,16 @@ on:
         required: true
         default: '17'
         type: string
+      test_artifact_name:
+        description: 'Test artifact name'
+        required: true
+        type: string
+
+env:
+  MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version'
 
 jobs:
   test-jvm:
-    env:
-      MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,9 +29,13 @@ jobs:
           cache: 'maven'
       - name: Test with Maven (verify)
         run: ./mvnw verify 
+      - name: Upload test results
+        uses: actions/upload-artifact@v24
+        with:
+          name: ${{ inputs.test_artifact_name }}
+          path: target/**
+          include-hidden-files: true
   test-native:
-    env:
-      MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
