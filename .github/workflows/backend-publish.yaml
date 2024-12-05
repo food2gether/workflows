@@ -18,7 +18,7 @@ on:
         required: true
 
 env:
-  MAVEN_OPTS: '--batch-mode --errors --fail-at-end --show-version -DskipTests'
+  MAVEN_OPTS: '--batch-mode -T 1C --errors --fail-at-end --show-version -DskipTests'
 
 jobs:
   publish-native:

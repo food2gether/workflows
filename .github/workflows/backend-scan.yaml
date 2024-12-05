@@ -58,7 +58,7 @@ jobs:
         with:
           name: ${{ inputs.test_artifact_name }}
       - name: SonarCloud analysis
-        run: mvn --batch-mode org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=${{ inputs.sonar_organization }} -Dsonar.projectKey=${{ inputs.sonar_project_key }} -Dsonar.qualitygate.wait=true
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --batch-mode -T 1C -Dsonar.organization=${{ inputs.sonar_organization }} -Dsonar.projectKey=${{ inputs.sonar_project_key }} -Dsonar.qualitygate.wait=true
         env:
           GITHUB_TOKEN: ${{ secrets.gh_token }}
           SONAR_TOKEN: ${{ secrets.sonar_token }}

@@ -14,7 +14,7 @@ on:
         type: string
 
 env:
-  MAVEN_ARGS: '--batch-mode --errors --fail-at-end --show-version'
+  MAVEN_ARGS: '--batch-mode -T 1C --errors --fail-at-end --show-version'
 
 jobs:
   test-jvm:
