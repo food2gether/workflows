@@ -30,7 +30,7 @@ jobs:
       - name: Test with Maven (verify)
         run: ./mvnw verify 
       - name: Upload test results
-        uses: actions/upload-artifact@v24
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.test_artifact_name }}
           path: target/**
@@ -42,6 +42,6 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          graalvm-version: '21.3.0'
+          java-version: ${{ inputs.java_version }}
       - name: Test with Maven (verify)
         run: ./mvnw clean verify -Pnative
