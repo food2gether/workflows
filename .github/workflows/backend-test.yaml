@@ -10,7 +10,7 @@ on:
         type: string
       profile:
         description: 'Maven profile'
-        required: true
+        required: false
         default: ''
         type: string
 
