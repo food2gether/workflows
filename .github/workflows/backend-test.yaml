@@ -34,9 +34,7 @@ jobs:
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
       - name: Test with Maven (verify)
-        run: ./mvnw verify -Pcoverage
-        env:
-          MAVEN_ARGS: ${{ env.MAVEN_ARGS }} ${{ inputs.profile && format('-P%s', inputs.profile) || '' }}
+        run: ./mvnw verify -Pcoverage${{ inputs.profile && format(',%s', inputs.profile) || '' }}
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: ${{ inputs.test_results_artifact_key != '' }}
