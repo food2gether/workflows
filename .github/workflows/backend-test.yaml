@@ -8,21 +8,17 @@ on:
         required: true
         default: '17'
         type: string
-      test_artifact_name:
-        description: 'Test artifact name'
+      profile:
+        description: 'Maven profile'
         required: true
+        default: ''
         type: string
-      run_native:
-        description: 'Run native tests'
-        required: false
-        default: false
-        type: boolean
 
 env:
   MAVEN_ARGS: '--batch-mode -T 1C --errors --fail-at-end --show-version'
 
 jobs:
-  test-jvm:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,20 +30,11 @@ jobs:
           cache: 'maven'
       - name: Test with Maven (verify)
         run: ./mvnw verify 
+        env:
+          MAVEN_ARGS: ${{ env.MAVEN_ARGS }} ${{ inputs.profile && '-P' + inputs.profile || '' }}
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.test_artifact_name }}
           path: target/**
           include-hidden-files: true
-  test-native:
-    runs-on: ubuntu-latest
-    if: ${{ inputs.run_native }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: ${{ inputs.java_version }}
-      - name: Test with Maven (verify)
-        run: ./mvnw clean verify -Pnative
