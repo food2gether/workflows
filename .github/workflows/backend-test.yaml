@@ -32,9 +32,3 @@ jobs:
         run: ./mvnw verify 
         env:
           MAVEN_ARGS: ${{ env.MAVEN_ARGS }} ${{ inputs.profile && format('-P%s', inputs.profile) || '' }}
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.test_artifact_name }}
-          path: target/**
-          include-hidden-files: true
