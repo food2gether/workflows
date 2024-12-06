@@ -31,7 +31,7 @@ jobs:
       - name: Test with Maven (verify)
         run: ./mvnw verify 
         env:
-          MAVEN_ARGS: ${{ env.MAVEN_ARGS }} ${{ inputs.profile && '-P' + inputs.profile || '' }}
+          MAVEN_ARGS: ${{ env.MAVEN_ARGS }} ${{ inputs.profile && format('-P%s', inputs.profile) || '' }}
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
