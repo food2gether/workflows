@@ -8,6 +8,10 @@ on:
         required: true
         default: '17'
         type: string
+      sonar_project_key:
+        description: 'Sonar project key'
+        required: true
+        type: string
       profile:
         description: 'Maven profile'
         required: false
@@ -18,6 +22,10 @@ on:
         required: false
         default: ''
         type: string
+    secrets:
+      sonar_token:
+        description: 'Sonar token'
+        required: true
 
 env:
   MAVEN_ARGS: '--batch-mode -T 1C --errors --fail-at-end --show-version'
