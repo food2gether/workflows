@@ -22,6 +22,11 @@ on:
         required: false
         default: ''
         type: string
+      additional_args:
+        description: 'Additional arguments for the Maven command'
+        required: false
+        default: ''
+        type: string
     secrets:
       sonar_token:
         description: 'Sonar token'
@@ -49,11 +54,12 @@ jobs:
       - name: Test with Maven (verify)
         run: >-
           ./mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar -Pcoverage
-          -Dsonar.projectKey=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.projectKey=${{ inputs.sonar_project_key }}
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.organization=food2gether
           -Dsonar.qualitygate.wait=true
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          ${{ inputs.additional_args || '' }}
         env:
           MAVEN_ARGS: ${{ env.MAVEN_ARGS }} ${{ inputs.profile && format('-P%s', inputs.profile) || '' }}
 
