@@ -2,8 +2,7 @@ name: Lint Frontend
 
 on:
   workflow_call:
-    inputs:
-      {}
+    inputs: {}
 
 jobs:
   lint:
