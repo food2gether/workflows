@@ -53,6 +53,7 @@ jobs:
         if: ${{ inputs.test_results_artifact_key != '' }}
         with:
           name: ${{ inputs.test_results_artifact_key }}
+          path: target/
       - name: Sonar scan with Maven
         run: >-
           ./mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar -Pcoverage
@@ -64,4 +65,3 @@ jobs:
           ${{ inputs.additional_args || '' }}
         env:
           MAVEN_ARGS: ${{ env.MAVEN_ARGS }} ${{ inputs.profile && format('-P%s', inputs.profile) || '' }}
-
