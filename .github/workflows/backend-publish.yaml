@@ -46,6 +46,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
+          context: .
           file: src/main/docker/Dockerfile.native-micro
           tags: |
             ghcr.io/${{ github.repository }}:${{ inputs.version }}-native
@@ -79,6 +80,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
+          context: .
           file: src/main/docker/Dockerfile.jvm
           tags: |
             ghcr.io/${{ github.repository }}:${{ inputs.version }}-jvm
