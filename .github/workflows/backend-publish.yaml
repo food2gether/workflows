@@ -32,7 +32,7 @@ jobs:
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
       - name: Build Quarkus app
-        run: ./mvnw package -Pnative
+        run: ./mvnw package -Pnative -DskipTests
       - name: Generated image metadata
         id: meta
         with: docker/metadata-action@v5
@@ -64,7 +64,7 @@ jobs:
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
       - name: Publish Quarkus Image
-        run: ./mvnw package 
+        run: ./mvnw package -DskipTests
       - name: Generated image metadata
         id: meta
         with: docker/metadata-action@v5
