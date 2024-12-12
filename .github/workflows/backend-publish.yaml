@@ -53,8 +53,8 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:${{ inputs.version }}-native
             ghcr.io/${{ github.repository }}:${{ inputs.version }}
-            ${{ github.event.isPrerelease && format('ghcr.io/{0}:latest-native', github.repository) || '' }}
-            ${{ github.event.isPrerelease && format('ghcr.io/{0}:latest', github.repository) || '' }}
+            ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest-native', github.repository) || '' }}
+            ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest', github.repository) || '' }}
           labels: |
             ${{ steps.meta.outputs.labels }}
   publish-jvm:
@@ -88,6 +88,6 @@ jobs:
           file: src/main/docker/Dockerfile.jvm
           tags: |
             ghcr.io/${{ github.repository }}:${{ inputs.version }}-jvm
-            ${{ github.event.isPrerelease && format('ghcr.io/{0}:latest-jvm', github.repository) || '' }}
+            ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest-jvm', github.repository) || '' }}
           labels: |
             ${{ steps.meta.outputs.labels }}
