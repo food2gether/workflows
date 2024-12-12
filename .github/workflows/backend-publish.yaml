@@ -35,6 +35,8 @@ jobs:
         run: mvn versions:set -DnewVersion=${{ inputs.version }} > /dev/null
       - name: Build Quarkus app
         run: ./mvnw package -Pnative
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
       - name: Generated image metadata
         uses: docker/metadata-action@v5
         id: meta
@@ -49,6 +51,7 @@ jobs:
         with:
           push: true
           context: .
+          platforms: linux/amd64,linux/arm64
           file: src/main/docker/Dockerfile.native-micro
           tags: |
             ghcr.io/${{ github.repository }}:${{ inputs.version }}-native
@@ -71,6 +74,8 @@ jobs:
         run: mvn versions:set -DnewVersion=${{ inputs.version }} > /dev/null
       - name: Publish Quarkus Image
         run: ./mvnw package
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
       - name: Generated image metadata
         uses: docker/metadata-action@v5
         id: meta
@@ -85,6 +90,7 @@ jobs:
         with:
           push: true
           context: .
+          platforms: linux/amd64,linux/arm64
           file: src/main/docker/Dockerfile.jvm
           tags: |
             ghcr.io/${{ github.repository }}:${{ inputs.version }}-jvm
