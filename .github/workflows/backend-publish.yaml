@@ -31,16 +31,28 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
-      - name: Publish Quarkus Image
-        run: ./mvnw versions:set clean package -DnewVersion='${{ inputs.version }}' -Dquarkus.native.container-build=true '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
-        env:
-          QUARKUS_CONTAINER_IMAGE_PUSH: true
-          QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
-          QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.gh_token }}
-          QUARKUS_CONTAINER_IMAGE_REGISTRY: ghcr.io
-          QUARKUS_CONTAINER_IMAGE_NAME: ${{ github.repository }}
-          QUARKUS_CONTAINER_IMAGE_TAG: ${{ inputs.version }}
-          QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: latest
+      - name: Build Quarkus app
+        run: ./mvnw package -Pnative
+      - name: Generated image metadata
+        id: meta
+        with: docker/metadata-action@v5
+      - name: Login to GitHub Container Registry
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.gh_token }}
+      - name: Build & Push image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          file: src/main/docker/Dockerfile.native-micro
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ inputs.version }}-native
+            ghcr.io/${{ github.repository }}:${{ inputs.version }}
+            ${{ github.event.isPrerelease && format('ghcr.io/{0}:latest-native', github.repository) || '' }}
+            ${{ github.event.isPrerelease && format('ghcr.io/{0}:latest', github.repository) || '' }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
   publish-jvm:
     runs-on: ubuntu-latest
     steps:
@@ -52,11 +64,22 @@ jobs:
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
       - name: Publish Quarkus Image
-        run: ./mvnw versions:set clean package -DnewVersion='${{ inputs.version }}' -Dproject.version='${{ inputs.version }}' '-Dquarkus.container-image.labels."org.opencontainers.image.revision"='"$GITHUB_SHA"
-        env:
-          QUARKUS_CONTAINER_IMAGE_PUSH: true
-          QUARKUS_CONTAINER_IMAGE_USERNAME: ${{ github.actor }}
-          QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.gh_token }}
-          QUARKUS_CONTAINER_IMAGE_REGISTRY: ghcr.io
-          QUARKUS_CONTAINER_IMAGE_NAME: ${{ github.repository }}
-          QUARKUS_CONTAINER_IMAGE_TAG: ${{ inputs.version }}-jvm
+        run: ./mvnw package 
+      - name: Generated image metadata
+        id: meta
+        with: docker/metadata-action@v5
+      - name: Login to GitHub Container Registry
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.gh_token }}
+      - name: Build & Push image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          file: src/main/docker/Dockerfile.jvm
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ inputs.version }}-jvm
+            ${{ github.event.isPrerelease && format('ghcr.io/{0}:latest-jvm', github.repository) || '' }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
