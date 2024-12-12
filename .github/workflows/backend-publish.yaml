@@ -31,8 +31,10 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
+      - name: Set project version
+        run: mvn versions:set -DnewVersion=${{ inputs.version }} > /dev/null
       - name: Build Quarkus app
-        run: ./mvnw package -Pnative -DskipTests
+        run: ./mvnw package -Pnative
       - name: Generated image metadata
         uses: docker/metadata-action@v5
         id: meta
@@ -65,8 +67,10 @@ jobs:
           distribution: 'temurin'
           java-version: '${{ inputs.java_version }}'
           cache: 'maven'
+      - name: Set project version
+        run: mvn versions:set -DnewVersion=${{ inputs.version }} > /dev/null
       - name: Publish Quarkus Image
-        run: ./mvnw package -DskipTests
+        run: ./mvnw package
       - name: Generated image metadata
         uses: docker/metadata-action@v5
         id: meta
