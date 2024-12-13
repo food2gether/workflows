@@ -44,6 +44,7 @@ jobs:
       - name: Build & Push image
         uses: food2gether/actions/docker-publish@0.0.1
         with:
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
           context: .
           file: ${{ inputs.dockerfile }}
           tags: ${{ inputs.tags }}
