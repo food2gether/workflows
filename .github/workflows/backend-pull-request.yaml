@@ -13,14 +13,14 @@ concurrency:
 
 jobs:
   test-native:
-    uses: food2gether/workflows/.github/workflows/backend-test.yaml@main
+    uses: food2gether/workflows/.github/workflows/maven-test.yaml@main
     with:
       java_version: '17'
       profile: native
       test_results_artifact_key: test-results
   sonar:
     needs: test-native
-    uses: food2gether/workflows/.github/workflows/backend-scan.yaml@main
+    uses: food2gether/workflows/.github/workflows/maven-sonar.yaml@main
     with:
       java_version: '17'
       test_results_artifact_key: test-results

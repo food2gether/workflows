@@ -40,7 +40,7 @@ jobs:
       - name: Set project version
         run: mvn versions:set -DnewVersion=${{ inputs.version }} > /dev/null
       - name: Build Quarkus app
-        run: ./mvnw package ---batch-mode -T 1C --errors --fail-at-end --show-version -DskipTests ${{ inputs.profile && format('-P{0}', inputs.profile) || '' }}
+        run: ./mvnw package --batch-mode -T 1C --errors --fail-at-end --show-version -DskipTests ${{ inputs.profile && format('-P{0}', inputs.profile) || '' }}
       - name: Build & Push image
         uses: food2gether/actions/docker-publish@0.0.1
         with:

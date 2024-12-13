@@ -8,5 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  push:
-    uses: food2gether/workflows/.github/workflows/backend-push.yaml@main
+  test-jvm:
+    uses: food2gether/workflows/.github/workflows/maven-test.yaml@main
+    with:
+      java_version: '17'
