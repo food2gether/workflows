@@ -41,4 +41,3 @@ jobs:
         with:
           name: ${{ inputs.test_results_artifact_key }}
           path: target/**
-

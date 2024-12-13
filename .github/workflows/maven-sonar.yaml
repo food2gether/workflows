@@ -36,7 +36,7 @@ env:
   MAVEN_ARGS: '--batch-mode -T 1C --errors --fail-at-end --show-version'
 
 jobs:
-  test:
+  sonar:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,40 @@
+name: Publish Quarkus Image
+
+on:
+  workflow_call:
+    inputs:
+      java_version:
+        description: 'Java version'
+        required: true
+        default: '17'
+        type: string
+      version:
+        description: 'Application version'
+        required: true
+        type: string
+
+env:
+  MAVEN_ARGS: '--batch-mode -T 1C --errors --fail-at-end --show-version -DskipTests'
+
+jobs:
+  publish-native:
+    uses: food2gether/workflows/.github/workflows/maven-publish.yaml@main
+    with:
+      java_version: '17'
+      version: ${{ inputs.version }}
+      profile: native
+      dockerfile: src/main/docker/Dockerfile.native-micro
+      tags: |
+        ghcr.io/${{ github.repository }}:${{ inputs.version }}-native
+        ghcr.io/${{ github.repository }}:${{ inputs.version }}
+        ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest-native', github.repository) || '' }}
+        ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest', github.repository) || '' }}
+  publish-jvm:
+    uses: food2gether/workflows/.github/workflows/maven-publish.yaml@main
+    with:
+      java_version: '17'
+      version: ${{ inputs.version }}
+      dockerfile: src/main/docker/Dockerfile.jvm
+      tags: |
+        ghcr.io/${{ github.repository }}:${{ inputs.version }}-jvm
+        ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest-jvm', github.repository) || '' }}

@@ -1,0 +1,49 @@
+name: Publish Quarkus Image
+
+on:
+  workflow_call:
+    inputs:
+      java_version:
+        description: 'Java version'
+        required: true
+        default: '17'
+        type: string
+      version:
+        description: 'Application version'
+        required: true
+        type: string
+      profile:
+        description: 'Maven profile'
+        required: false
+        default: ''
+        type: string
+      tags:
+        description: 'Docker image tags'
+        required: true
+        type: string
+      dockerfile:
+        description: 'Path to the Dockerfile'
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ inputs.java_version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '${{ inputs.java_version }}'
+          cache: 'maven'
+      - name: Set project version
+        run: mvn versions:set -DnewVersion=${{ inputs.version }} > /dev/null
+      - name: Build Quarkus app
+        run: ./mvnw package ---batch-mode -T 1C --errors --fail-at-end --show-version -DskipTests ${{ inputs.profile && format('-P{0}', inputs.profile) || '' }}
+      - name: Build & Push image
+        uses: food2gether/actions/docker-publish@0.0.1
+        with:
+          context: .
+          file: ${{ inputs.dockerfile }}
+          tags: ${{ inputs.tags }}
