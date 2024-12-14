@@ -119,11 +119,9 @@ jobs:
             tags="${tags} -t ${{ env.REGISTRY_REPO }}:$tag"
           done < <(printf '%s' "$TAGS")
 
-          echo "::set-output name=tags::${tags}"
+          echo "REPO_TAGS=${tags}" >> $GITHUB_ENV
         env:
           TAGS: ${{ inputs.tags }}
       - name: Merge digests
         working-directory: /tmp/digests
-        run: docker buildx imagetools create ${{ steps.tags.outputs.tags }} $(printf '${{ env.REGISTRY_REPO }}@sha256:%s ' *)
-      - name: Push merged image
-        run: docker push --all-tags ${{ env.REGISTRY_REPO }}
+        run: docker buildx imagetools create $REPO_TAGS $(printf '${{ env.REGISTRY_REPO }}@sha256:%s ' *)
