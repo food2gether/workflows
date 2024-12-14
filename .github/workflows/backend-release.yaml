@@ -25,10 +25,10 @@ jobs:
       profile: native
       dockerfile: src/main/docker/Dockerfile.native-micro
       tags: |
-        ghcr.io/${{ github.repository }}:${{ inputs.version }}-native
-        ghcr.io/${{ github.repository }}:${{ inputs.version }}
-        ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest-native', github.repository) || '' }}
-        ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest', github.repository) || '' }}
+        ${{ inputs.version }}-native
+        ${{ inputs.version }}
+        ${{ !github.event.release.isPrerelease && 'latest-native' || '' }}
+        ${{ !github.event.release.isPrerelease && 'latest' || '' }}
   publish-jvm:
     uses: food2gether/workflows/.github/workflows/maven-publish.yaml@main
     with:
@@ -36,5 +36,5 @@ jobs:
       version: ${{ inputs.version }}
       dockerfile: src/main/docker/Dockerfile.jvm
       tags: |
-        ghcr.io/${{ github.repository }}:${{ inputs.version }}-jvm
-        ${{ !github.event.release.isPrerelease && format('ghcr.io/{0}:latest-jvm', github.repository) || '' }}
+        ${{ inputs.version }}-jvm
+        ${{ !github.event.release.isPrerelease && 'latest-jvm' || '' }}
