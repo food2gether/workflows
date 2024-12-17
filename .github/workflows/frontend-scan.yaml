@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test with Maven (verify)
+      - name: Sonar scan
         run: >-
           npx sonarqube-scanner ${{ inputs.profile && format('-P%s', inputs.profile) || '' }}
           -Dsonar.projectKey=${{ inputs.sonar_project_key }}
@@ -36,4 +36,3 @@ jobs:
           -Dsonar.organization=food2gether
           -Dsonar.qualitygate.wait=true
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-
