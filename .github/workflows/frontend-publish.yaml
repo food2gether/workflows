@@ -7,6 +7,10 @@ on:
         description: 'Application version'
         required: true
         type: string
+      latest:
+        description: 'Publish as latest'
+        required: false
+        type: boolean
     secrets:
       gh_token:
         description: 'GitHub Token with permissions to push to ghcr.io'
@@ -47,5 +51,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository }}:${{ inputs.version }}
-            ${{ !github.event.release.isPrerelease && 'ghcr.io/${{ github.repository }}:latest' || '' }}
+            ${{ inputs.latest && format('ghcr.io/{0}:latest', github.repository) || '' }}
           labels: ${{ steps.metadata.outputs.labels }}
