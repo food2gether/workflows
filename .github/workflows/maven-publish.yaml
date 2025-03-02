@@ -116,7 +116,9 @@ jobs:
           tags=''
 
           while IFS= read -r tag || [[ -n "$tag" ]]; do
-            tags="${tags} -t ${{ env.REGISTRY_REPO }}:$tag"
+            if [[ -n "$tag" ]]; then
+              tags="${tags} -t ${{ env.REGISTRY_REPO }}:$tag"
+            fi
           done < <(printf '%s' "$TAGS")
 
           echo "REPO_TAGS=${tags}" >> $GITHUB_ENV
