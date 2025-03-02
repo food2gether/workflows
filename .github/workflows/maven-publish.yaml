@@ -33,10 +33,11 @@ jobs:
   build-images:
     strategy:
       matrix:
-        - arch: amd64
-          runs-on: ubuntu-24.04
-        - arch: arm64
-          runs-on: ubuntu-24.04-arm
+        arch:
+          - handle: amd64
+            os: ubuntu-24.04
+          - handle: arm64
+            os: ubuntu-24.04-arm
     runs-on: ${{ matrix.runs-on }}
     steps:
       # Set up all tools

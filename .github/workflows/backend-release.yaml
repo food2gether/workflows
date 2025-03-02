@@ -12,6 +12,10 @@ on:
         description: 'Application version'
         required: true
         type: string
+      latest:
+        description: 'Publish as latest'
+        required: false
+        type: boolean
 
 env:
   MAVEN_ARGS: '--batch-mode -T 1C --errors --fail-at-end --show-version -DskipTests'
@@ -27,8 +31,8 @@ jobs:
       tags: |
         ${{ inputs.version }}-native
         ${{ inputs.version }}
-        ${{ !github.event.release.isPrerelease && 'latest-native' || '' }}
-        ${{ !github.event.release.isPrerelease && 'latest' || '' }}
+        ${{ inputs.latest && 'latest-native' || '' }}
+        ${{ inputs.latest && 'latest' || '' }}
   publish-jvm:
     uses: food2gether/workflows/.github/workflows/maven-publish.yaml@main
     with:
@@ -37,4 +41,4 @@ jobs:
       dockerfile: src/main/docker/Dockerfile.jvm
       tags: |
         ${{ inputs.version }}-jvm
-        ${{ !github.event.release.isPrerelease && 'latest-jvm' || '' }}
+        ${{ inputs.latest && 'latest-jvm' || '' }}
