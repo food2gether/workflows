@@ -38,7 +38,7 @@ jobs:
             os: ubuntu-24.04
           - handle: arm64
             os: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.arch.os }}
     steps:
       # Set up all tools
       - uses: actions/checkout@v4
@@ -63,19 +63,19 @@ jobs:
         run: >-
           ./mvnw package ${{ inputs.profile && format('-P{0}', inputs.profile) || '' }}
           -Dquarkus.native.container-build=true
-          -Dquarkus.native.container-runtime-options=--platform=linux/${{ matrix.arch }}
+          -Dquarkus.native.container-runtime-options=--platform=linux/${{ matrix.arch.handle }}
         env:
           MAVEN_ARGS: '--batch-mode -T 1C --errors --fail-at-end --show-version -DskipTests'
       - name: Generate Metadata
         uses: docker/metadata-action@v5
         id: meta
-      - name: Build & push Digest for linux/${{ matrix.arch }}
+      - name: Build & push Digest for linux/${{ matrix.arch.handle }}
         uses: docker/build-push-action@v6
         id: build
         with:
           context: .
           file: ${{ inputs.dockerfile }}
-          platforms: linux/${{ matrix.arch }}
+          platforms: linux/${{ matrix.arch.handle }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_REPO }},push-by-digest=true,name-canonical=true,push=true
       - name: Export digest
@@ -86,7 +86,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ hashFiles(inputs.dockerfile) }}-${{ matrix.arch }}
+          name: digests-${{ hashFiles(inputs.dockerfile) }}-${{ matrix.arch.handle }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
