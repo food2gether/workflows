@@ -5,6 +5,7 @@ on:
     inputs:
       sonar-project:
         description: 'Sonar Project Key'
+        type: string
         required: true
     secrets:
       sonar-token:
